@@ -1,24 +1,21 @@
-﻿<h1>Profile</h1>
-<form role="form">
+﻿@model nasga.me.Models.ProfileViewModel
+<h1>Profile</h1>
+@using (Html.BeginForm("Index", "Profile", FormMethod.Post, new {role = "form"}))
+{
+    @Html.AntiForgeryToken()
+     @Html.ValidationSummary()
     <div class="form-group">
-        <label for="exampleInputEmail1" class="sr-only">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+        @Html.LabelFor(m => m.FirstName, new {@for = "FirstName", @class = "sr-only"})
+        @Html.TextBoxFor(m => m.FirstName, new {@id = "FirstName", @class = "form-control", @placeholder = "Enter first name"})
     </div>
     <div class="form-group">
-        <label for="exampleInputPassword1" class="sr-only">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        @Html.LabelFor(m => m.LastName, new {@for = "LastName", @class = "sr-only"})
+        @Html.TextBoxFor(m => m.LastName, new {@id = "LastName", @class = "form-control", @placeholder = "Enter last name"})
+        <p class="help-block">Please format your name exactly as it appears on nasgaweb.com.</p>
     </div>
     <div class="form-group">
-        <label for="athleteClass" class="sr-only">Athlete Class</label>
-        <select class="form-control" id="athleteClass">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-        </select>
-        <p class="help-block">Example block-level help text here.</p>
+        @Html.LabelFor(m => m.AthleteClass, "Class", new {@for = "AthleteClass", @class = "sr-only"})
+        @Html.DropDownListFor(m => m.AthleteClass, Model.Classes, new {@id = "AthleteClass", @class = "form-control"})
     </div>
-
     <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+}
