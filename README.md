@@ -1,6 +1,5 @@
 nasga.me
 ========
-Why
 My wife is an amateur Highland Games athlete. 
 If you don’t know what that is, go here http://nasgaweb.com/getstart.asp
 The official site for the sport in North America (http://www.nasgaweb.com/) 
