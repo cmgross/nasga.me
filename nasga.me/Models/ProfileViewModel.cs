@@ -8,7 +8,6 @@ namespace nasga.me.Models
     public class ProfileViewModel
     {
         [Required(ErrorMessage = "First name required.")]
-        [StringLength(5, ErrorMessage = "First name cannot exceed 5 characters.")]
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Last name required.")]
         public string LastName { get; set; }

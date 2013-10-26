@@ -23,7 +23,7 @@ namespace nasga.me.Controllers
         [HttpPost]
         public ActionResult Index(ProfileViewModel profile)
         {
-            return View();
+            return View(profile);
         }
     }
 }
