@@ -22,9 +22,16 @@ namespace nasga.me.Models
 
         public ProfileViewModel(Dictionary<string, string> athleteInfo)
         {
-            FirstName = athleteInfo[AppSettingsGet.FirstNameCookie] ?? "";
-            LastName = athleteInfo[AppSettingsGet.LastNameCookie] ?? "";
-            AthleteClass = athleteInfo[AppSettingsGet.AthleteClassCookie] ?? "";
+        //http://stackoverflow.com/questions/2829873/how-can-i-detect-if-this-dictionary-key-exists-in-c
+            string firstName;
+            string lastName;
+            string athleteClass;
+            athleteInfo.TryGetValue(AppSettingsGet.FirstNameCookie, out firstName);
+            athleteInfo.TryGetValue(AppSettingsGet.LastNameCookie, out lastName);
+            athleteInfo.TryGetValue(AppSettingsGet.AthleteClassCookie, out athleteClass);
+            FirstName = firstName;
+            LastName = lastName;
+            AthleteClass = athleteClass;
             var classes = new List<string> {string.Empty};
             classes.AddRange(AppSettingsGet.AthleteClasses);
             Classes = classes.Select(p => new SelectListItem
