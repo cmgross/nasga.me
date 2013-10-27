@@ -22,9 +22,9 @@ namespace nasga.me.Models
 
         public ProfileViewModel(Dictionary<string, string> athleteInfo)
         {
-            FirstName = athleteInfo[AppSettingsGet.FirstNameCookie];
-            LastName = athleteInfo[AppSettingsGet.LastNameCookie];
-            AthleteClass = athleteInfo[AppSettingsGet.AthleteClassCookie];
+            FirstName = athleteInfo[AppSettingsGet.FirstNameCookie] ?? "";
+            LastName = athleteInfo[AppSettingsGet.LastNameCookie] ?? "";
+            AthleteClass = athleteInfo[AppSettingsGet.AthleteClassCookie] ?? "";
             var classes = new List<string> {string.Empty};
             classes.AddRange(AppSettingsGet.AthleteClasses);
             Classes = classes.Select(p => new SelectListItem
