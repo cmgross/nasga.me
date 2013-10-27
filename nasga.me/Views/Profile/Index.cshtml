@@ -1,21 +1,21 @@
 ﻿@model nasga.me.Models.ProfileViewModel
 <h1>Profile</h1>
-@using (Html.BeginForm("Index", "Profile", FormMethod.Post, new {role = "form"}))
+@using (Html.BeginForm("Index", "Profile", FormMethod.Post, new { role = "form" }))
 {
     @Html.AntiForgeryToken()
-     @Html.ValidationSummary()
+    @Html.ValidationSummary()
     <div class="form-group">
-        @Html.LabelFor(m => m.FirstName, new {@for = "FirstName", @class = "sr-only"})
-        @Html.TextBoxFor(m => m.FirstName, new {@id = "FirstName", @class = "form-control", @placeholder = "Enter first name"})
+        @Html.LabelFor(m => m.FirstName, new { @for = "FirstName" })
+        @Html.TextBoxFor(m => m.FirstName, new { @id = "FirstName", @class = "form-control", @placeholder = "Enter first name" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.LastName, new {@for = "LastName", @class = "sr-only"})
-        @Html.TextBoxFor(m => m.LastName, new {@id = "LastName", @class = "form-control", @placeholder = "Enter last name"})
+        @Html.LabelFor(m => m.LastName, new { @for = "LastName" })
+        @Html.TextBoxFor(m => m.LastName, new { @id = "LastName", @class = "form-control", @placeholder = "Enter last name" })
         <p class="help-block">Please format your name exactly as it appears on nasgaweb.com.</p>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.AthleteClass, "Class", new {@for = "AthleteClass"})
-        @Html.DropDownListFor(m => m.AthleteClass, Model.Classes, new {@id = "AthleteClass", @class = "form-control"})
+        @Html.LabelFor(m => m.AthleteClass, new { @for = "AthleteClass" })
+        @Html.DropDownListFor(m => m.AthleteClass, Model.Classes, new { @id = "AthleteClass", @class = "form-control" })
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }
