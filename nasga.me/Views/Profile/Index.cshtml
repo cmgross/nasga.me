@@ -14,10 +14,10 @@
         <p class="help-block">Please format your name exactly as it appears on nasgaweb.com.</p>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.AthleteClass, "Class", new {@for = "AthleteClass", @class = "sr-only"})
+        @Html.LabelFor(m => m.AthleteClass, "Class", new {@for = "AthleteClass"})
         @Html.DropDownListFor(m => m.AthleteClass, Model.Classes, new {@id = "AthleteClass", @class = "form-control"})
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Save</button>
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
