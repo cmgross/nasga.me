@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using nasga.me.Models;
@@ -29,7 +30,7 @@ namespace nasga.me.Controllers
         }
 
         private Dictionary<string,string> GetProfileCookies()
-        {
+        {//TODO eventually extract this to a profile manager that is an interface so that it can be mocked.
             var cookieCollection = new Dictionary<string, string>();
 
             foreach (string key in HttpContext.Request.Cookies.AllKeys)
@@ -41,7 +42,7 @@ namespace nasga.me.Controllers
         }
 
         private void UpdateProfileCookies(ProfileViewModel profile)
-        {
+        {//TODO eventually extract this away to a profile manager that is an interface so that it can be mocked.
             var firstNameCookie = new HttpCookie(AppSettingsGet.FirstNameCookie) { Value = profile.FirstName };
             var lastNameCookie = new HttpCookie(AppSettingsGet.LastNameCookie) { Value = profile.LastName };
             var athleteClassCookie = new HttpCookie(AppSettingsGet.AthleteClassCookie) { Value = profile.AthleteClass };

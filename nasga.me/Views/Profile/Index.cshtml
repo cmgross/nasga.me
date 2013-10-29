@@ -1,6 +1,6 @@
 ﻿@model nasga.me.Models.ProfileViewModel
 <h1>Profile</h1>
-@using (Html.BeginForm("Index", "Profile", FormMethod.Post, new { role = "form" }))
+@using (Html.BeginForm("Index", "Profile", FormMethod.Post, new { id = "profileForm", role = "form" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
@@ -21,4 +21,6 @@
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryblockUI")
+    @Scripts.Render("~/bundles/scripts")
 }
