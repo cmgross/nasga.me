@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using nasga.me.Helpers;
+using nasga.me.Interfaces;
 
 namespace nasga.me.Models
 {
@@ -20,21 +21,19 @@ namespace nasga.me.Models
         public string AthleteClass { get; set; }
         public List<SelectListItem> Classes { get; set; }
 
-        public ProfileViewModel(IReadOnlyDictionary<string, string> athleteInfo)
+        public ProfileViewModel(IConfigManager configManager, IReadOnlyDictionary<string, string> athleteInfo)
         {
-            //TODO use this on MyThrows model to see if the athlete info is in cookies, else redirect
-        //http://stackoverflow.com/questions/2829873/how-can-i-detect-if-this-dictionary-key-exists-in-c
             string firstName;
             string lastName;
             string athleteClass;
-            athleteInfo.TryGetValue(AppSettingsGet.FirstNameCookie, out firstName);
-            athleteInfo.TryGetValue(AppSettingsGet.LastNameCookie, out lastName);
-            athleteInfo.TryGetValue(AppSettingsGet.AthleteClassCookie, out athleteClass);
+            athleteInfo.TryGetValue(configManager.AthleteFirstNameKey, out firstName);
+            athleteInfo.TryGetValue(configManager.AthleteLastNameKey, out lastName);
+            athleteInfo.TryGetValue(configManager.AthleteClassKey, out athleteClass);
             FirstName = firstName;
             LastName = lastName;
             AthleteClass = athleteClass;
             var classes = new List<string> {string.Empty};
-            classes.AddRange(AppSettingsGet.AthleteClasses);
+            classes.AddRange(configManager.AthleteClasses);
             Classes = classes.Select(p => new SelectListItem
             {
                 Text = p,

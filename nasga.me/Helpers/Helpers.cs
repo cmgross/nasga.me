@@ -8,17 +8,32 @@ namespace nasga.me.Helpers
 {
     public static class AppSettingsGet
     {
-        public static string FirstNameCookie
+        public static string AthleteKeyName
         {
-            get { return ConfigurationManager.AppSettings["FirstNameCookie"]; }
+            get { return ConfigurationManager.AppSettings["AthleteCookieName"]; }
         }
-        public static string LastNameCookie
+        public static string AthleteFirstNameKey
         {
-            get { return ConfigurationManager.AppSettings["LastNameCookie"]; }
+            get { return ConfigurationManager.AppSettings["AthleteFirstNameKey"]; }
         }
-        public static string AthleteClassCookie
+        public static string AthleteLastNameKey
         {
-            get { return ConfigurationManager.AppSettings["AthleteClassCookie"]; }
+            get { return ConfigurationManager.AppSettings["AthleteLastNameKey"]; }
+        }
+        public static string AthleteClassKey
+        {
+            get { return ConfigurationManager.AppSettings["AthleteClassKey"]; }
+        }
+
+        public static int ConfigurationExpirationDays
+        {
+            get
+            {
+                var expirationPeriod = ConfigurationManager.AppSettings["ConfigurationExpirationDays"];
+                int cookieExpirationPeriod;
+                int.TryParse(expirationPeriod, out cookieExpirationPeriod);
+                return cookieExpirationPeriod;
+            }
         }
 
         public static List<string> AthleteClasses

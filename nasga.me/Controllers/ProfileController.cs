@@ -5,18 +5,32 @@ using System.Net;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
+using nasga.me.Interfaces;
 using nasga.me.Models;
 using nasga.me.Helpers;
+using nasga.me.Services;
 
 namespace nasga.me.Controllers
 {
     public class ProfileController : Controller
     {
-        // GET: /Profile/
+        private readonly IProfileManager _profileManager;
+        private readonly IConfigManager _configManager;
+
+        public ProfileController(IProfileManager profileManager, IConfigManager configManager)
+        {
+            _profileManager = profileManager;
+            _configManager = configManager;
+        }
+
+        public ProfileController(): this(new CookieProfileManager(), new AppConfigManager())
+        {
+        }
+
         [HttpGet]
         public ActionResult Index()
         {
-            var profileViweModel = new ProfileViewModel(GetProfileCookies());
+            var profileViweModel = new ProfileViewModel(_configManager,_profileManager.GetProfile(_configManager));
             return View(profileViweModel);
         }
 
@@ -25,33 +39,8 @@ namespace nasga.me.Controllers
         public ActionResult Index(ProfileViewModel profile)
         {
             if (!ModelState.IsValid) return View("Error");
-            UpdateProfileCookies(profile);
+            _profileManager.UpdateProfile(_configManager,profile.FirstName, profile.LastName, profile.AthleteClass);
             return RedirectToAction("Index");
-        }
-
-        private Dictionary<string,string> GetProfileCookies()
-        {//TODO eventually extract this to a profile manager that is an interface so that it can be mocked.
-            var cookieCollection = new Dictionary<string, string>();
-
-            foreach (string key in HttpContext.Request.Cookies.AllKeys)
-            {
-                string value = Request.Cookies[key] == null ? "" : Request.Cookies[key].Value;
-                cookieCollection.Add(key, value);
-            }
-            return cookieCollection;
-        }
-
-        private void UpdateProfileCookies(ProfileViewModel profile)
-        {//TODO eventually extract this away to a profile manager that is an interface so that it can be mocked.
-            var firstNameCookie = new HttpCookie(AppSettingsGet.FirstNameCookie) { Value = profile.FirstName };
-            var lastNameCookie = new HttpCookie(AppSettingsGet.LastNameCookie) { Value = profile.LastName };
-            var athleteClassCookie = new HttpCookie(AppSettingsGet.AthleteClassCookie) { Value = profile.AthleteClass };
-            HttpContext.Response.Cookies.Remove(AppSettingsGet.FirstNameCookie);
-            HttpContext.Response.Cookies.Remove(AppSettingsGet.LastNameCookie);
-            HttpContext.Response.Cookies.Remove(AppSettingsGet.AthleteClassCookie);
-            HttpContext.Response.SetCookie(firstNameCookie);
-            HttpContext.Response.SetCookie(lastNameCookie);
-            HttpContext.Response.SetCookie(athleteClassCookie);
         }
     }
 }

@@ -23,7 +23,8 @@ namespace nasga.me.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
+            //TODO http://stackoverflow.com/questions/10571450/should-servicestack-be-the-service-layer-in-an-mvc-application-or-should-it-call
+            //TODO look at this controller for moving messages to viewbag and displaying them.
             return View();
         }
     }
