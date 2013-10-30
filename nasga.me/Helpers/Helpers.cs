@@ -10,7 +10,7 @@ namespace nasga.me.Helpers
     {
         public static string AthleteKeyName
         {
-            get { return ConfigurationManager.AppSettings["AthleteCookieName"]; }
+            get { return ConfigurationManager.AppSettings["AthleteKeyName"]; }
         }
         public static string AthleteFirstNameKey
         {
