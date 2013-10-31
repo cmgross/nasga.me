@@ -7,6 +7,7 @@ namespace nasga.me
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
+            //Commented out so that AppHarbor can log errors. The below code supresses them.
             //filters.Add(new HandleErrorAttribute());
         }
     }

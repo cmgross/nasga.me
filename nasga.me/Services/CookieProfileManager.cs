@@ -2,32 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using nasga.me.Helpers;
 using nasga.me.Interfaces;
 
 namespace nasga.me.Services
 {
     public class CookieProfileManager : IProfileManager
     {
-        public Dictionary<string, string> GetProfile(IConfigManager configManager)
+        private readonly IHttpContextBaseWrapper _httpContext;
+        private readonly IConfigManager _configManager;
+
+        public CookieProfileManager(IHttpContextBaseWrapper httpContext, IConfigManager configManager)
+        {
+            _httpContext = httpContext;
+            _configManager = configManager;
+        }
+
+        public Dictionary<string, string> GetProfile()
         {
             var cookieCollection = new Dictionary<string, string>();
-            var athleteCookie = HttpContext.Current.Request.Cookies[configManager.AthleteClassKey];
+            var athleteCookie = _httpContext.Cookies[_configManager.AthleteKey];
             if (athleteCookie == null) return cookieCollection;
             foreach (var key in athleteCookie.Values.AllKeys)
-                cookieCollection.Add(key, HttpContext.Current.Request.Cookies[configManager.AthleteClassKey].Values[key] ?? "");
+                cookieCollection.Add(key, _httpContext.Cookies[_configManager.AthleteKey].Values[key] ?? "");
             return cookieCollection;
         }
 
-        public void UpdateProfile(IConfigManager configManager,string firstName, string lastName, string athleteClass)
+        public void UpdateProfile(string firstName, string lastName, string athleteClass)
         {
-            var athleteInfo = new HttpCookie(configManager.AthleteClassKey);
-            athleteInfo.Values[configManager.AthleteFirstNameKey] = firstName;
-            athleteInfo.Values[configManager.AthleteLastNameKey] = lastName;
-            athleteInfo.Values[configManager.AthleteClassKey] = athleteClass;
-            athleteInfo.Expires = DateTime.Now.AddDays(configManager.ConfigurationExpirationDays); //later change to 30 day expiration in webconfig
-            HttpContext.Current.Response.Cookies.Remove(configManager.AthleteClassKey);
-            HttpContext.Current.Response.SetCookie(athleteInfo);
+            var athleteInfo = new HttpCookie(_configManager.AthleteKey);
+            athleteInfo.Values[_configManager.AthleteFirstNameKey] = firstName;
+            athleteInfo.Values[_configManager.AthleteLastNameKey] = lastName;
+            athleteInfo.Values[_configManager.AthleteClassKey] = athleteClass;
+            athleteInfo.Expires = DateTime.Now.AddDays(_configManager.ConfigurationExpirationDays); //later change to 30 day expiration in webconfig
+            _httpContext.Response.Cookies.Remove(_configManager.AthleteKey);
+            _httpContext.Response.SetCookie(athleteInfo);
         }
     }
 }

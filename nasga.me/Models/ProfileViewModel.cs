@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using nasga.me.Helpers;
 using nasga.me.Interfaces;
 
 namespace nasga.me.Models
@@ -44,14 +43,7 @@ namespace nasga.me.Models
 
         public ProfileViewModel()
         {
-            var classes = new List<string> { string.Empty };
-            classes.AddRange(AppSettingsGet.AthleteClasses);
-            Classes = classes.Select(p => new SelectListItem
-            {
-                Text = p,
-                Value = p,
-                Selected = p == string.Empty
-            }).ToList();
+            
         }
     }
 }

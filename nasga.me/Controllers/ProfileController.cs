@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.Mvc;
 using nasga.me.Interfaces;
 using nasga.me.Models;
-using nasga.me.Helpers;
 using nasga.me.Services;
 
 namespace nasga.me.Controllers
@@ -23,14 +22,10 @@ namespace nasga.me.Controllers
             _configManager = configManager;
         }
 
-        public ProfileController(): this(new CookieProfileManager(), new AppConfigManager())
-        {
-        }
-
         [HttpGet]
         public ActionResult Index()
         {
-            var profileViweModel = new ProfileViewModel(_configManager,_profileManager.GetProfile(_configManager));
+            var profileViweModel = new ProfileViewModel(_configManager,_profileManager.GetProfile());
             return View(profileViweModel);
         }
 
@@ -39,7 +34,7 @@ namespace nasga.me.Controllers
         public ActionResult Index(ProfileViewModel profile)
         {
             if (!ModelState.IsValid) return View("Error");
-            _profileManager.UpdateProfile(_configManager,profile.FirstName, profile.LastName, profile.AthleteClass);
+            _profileManager.UpdateProfile(profile.FirstName, profile.LastName, profile.AthleteClass);
             return RedirectToAction("Index");
         }
     }
