@@ -1,5 +1,11 @@
 ﻿@model nasga.me.Models.ProfileViewModel
 <h1>Profile</h1>
+@if (!string.IsNullOrEmpty(Model.ProfileError))
+{
+    <div class="alert alert-danger">
+        @Model.ProfileError
+    </div>
+}
 @using (Html.BeginForm("Index", "Profile", FormMethod.Post, new { id = "profileForm", role = "form" }))
 {
     @Html.AntiForgeryToken()

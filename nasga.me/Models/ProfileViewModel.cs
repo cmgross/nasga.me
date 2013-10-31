@@ -7,30 +7,13 @@ using nasga.me.Interfaces;
 
 namespace nasga.me.Models
 {
-    public class ProfileViewModel
+    public class ProfileViewModel : Profile
     {
-        [Required(ErrorMessage = "First name required.")]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-        [Required(ErrorMessage = "Last name required.")]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-        [Required(ErrorMessage = "Class required.")]
-        [Display(Name = "Class")]
-        public string AthleteClass { get; set; }
+        public string ProfileError { get; set; }
         public List<SelectListItem> Classes { get; set; }
 
-        public ProfileViewModel(IConfigManager configManager, IReadOnlyDictionary<string, string> athleteInfo)
+        public ProfileViewModel(IConfigManager configManager, IReadOnlyDictionary<string, string> athleteInfo) : base(configManager,athleteInfo)
         {
-            string firstName;
-            string lastName;
-            string athleteClass;
-            athleteInfo.TryGetValue(configManager.AthleteFirstNameKey, out firstName);
-            athleteInfo.TryGetValue(configManager.AthleteLastNameKey, out lastName);
-            athleteInfo.TryGetValue(configManager.AthleteClassKey, out athleteClass);
-            FirstName = firstName;
-            LastName = lastName;
-            AthleteClass = athleteClass;
             var classes = new List<string> {string.Empty};
             classes.AddRange(configManager.AthleteClasses);
             Classes = classes.Select(p => new SelectListItem

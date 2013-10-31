@@ -42,7 +42,7 @@ namespace nasga.me.App_Start
         : AppHostBase
     {
         public AppHost() //Tell ServiceStack the name and where to find your web services
-            : base("StarterTemplate ASP.NET Host", typeof(HelloService).Assembly) { }
+            : base("Nasga Athlete Data", typeof(AthleteService).Assembly) { }
 
         public override void Configure(Funq.Container container)
         {
@@ -51,9 +51,9 @@ namespace nasga.me.App_Start
 
             //Configure User Defined REST Paths
             Routes
-              .Add<Hello>("/hello")
-              .Add<Hello>("/hello/{Name*}");
-
+                //.Add<Hello>("/hello")
+                //.Add<Hello>("/hello/{Name*}");
+            .Add<Athlete>("/athlete/{FirstName}/{LastName}/{Class}");
             //Uncomment to change the default ServiceStack configuration
             //SetConfig(new EndpointHostConfig {
             //});
@@ -79,7 +79,7 @@ namespace nasga.me.App_Start
             };
 
             //Register all your dependencies
-            container.Register(new TodoRepository());
+            //container.Register(new TodoRepository());
             container.Register<IHttpContextBaseWrapper>(c => new HttpContextBaseWrapper());
             container.Register<IProfileManager>(c => new CookieProfileManager(new HttpContextBaseWrapper(), appConfigManager));
             container.Register<IConfigManager>(c => appConfigManager);

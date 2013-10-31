@@ -25,13 +25,16 @@ namespace nasga.me.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var profileViweModel = new ProfileViewModel(_configManager,_profileManager.GetProfile());
-            return View(profileViweModel);
+            var profile = new ProfileViewModel(_configManager, _profileManager.GetProfile())
+            {
+                ProfileError = (string)TempData["ProfileError"] ?? string.Empty
+            };
+            return View(profile);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Index(ProfileViewModel profile)
+        public ActionResult Index(Profile profile)
         {
             if (!ModelState.IsValid) return View("Error");
             _profileManager.UpdateProfile(profile.FirstName, profile.LastName, profile.AthleteClass);
