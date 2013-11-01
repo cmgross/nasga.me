@@ -6,8 +6,8 @@
 <h4>
     @Model.Class
 </h4>
-<br<br />
-<div>
+<br/><br />
+<div style="overflow-x: scroll;">
     <div style="display: inline-block; text-align: left; font-weight: bold; margin-right: 20px;">
         Year<br/>
         Rank<br/>
@@ -23,7 +23,7 @@
     </div>
     @foreach (var record in Model.Records.OrderByDescending(c => c.Year))
         {
-        <div style="display: inline-block; text-align: center; margin-left: 20px;">
+        <div class="hurr">
             @record.Year <br/>
             @record.Rank <br/>
             @record.Braemar.Throw<br/>
@@ -37,4 +37,56 @@
             @record.Wfh.Throw<br/>
         </div>
         }
+    <div class="hurr">
+        Year<br />
+        Rank<br />
+        Braemar<br />
+        Open<br />
+        HWFD<br />
+        LWFD<br />
+        HH<br />
+        LH<br />
+        Caber<br />
+        Sheaf<br />
+        WFH<br />
+    </div>
+    <div class="hurr">
+        Year<br />
+        Rank<br />
+        Braemar<br />
+        Open<br />
+        HWFD<br />
+        LWFD<br />
+        HH<br />
+        LH<br />
+        Caber<br />
+        Sheaf<br />
+        WFH<br />
+    </div>
+    <div class="hurr">
+        Year<br />
+        Rank<br />
+        Braemar<br />
+        Open<br />
+        HWFD<br />
+        LWFD<br />
+        HH<br />
+        LH<br />
+        Caber<br />
+        Sheaf<br />
+        WFH<br />
+    </div>
+    <div class="hurr">
+        Year<br />
+        Rank<br />
+        Braemar<br />
+        Open<br />
+        HWFD<br />
+        LWFD<br />
+        HH<br />
+        LH<br />
+        Caber<br />
+        Sheaf<br />
+        WFH<br />
+    </div>
 </div>
