@@ -14,16 +14,21 @@ namespace nasga.me.App_Start
 {
     public class AthleteService : Service
     {
-        public object Any(Athlete request)
+        public AthleteResponse Any(Athlete request)
         {
             //TODO: switch based on webconfig entry
             string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
-            return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
-            {
-                //var athleteResults = NasgaClient.AgilityScreenScrape(request);
-                var athleteResults = NasgaClient.MockScreenScrape(request);
-                return athleteResults;
-            });
+            //http://stackoverflow.com/questions/15564153/servicestack-caching-a-service-response-using-redis
+            //this.CacheClient.Set<PlayerPitchesResponse>("yourkey", value); //Set the value
+            //this.CacheClient.Get<PlayerPitchesResponse>("yourkey"); //Get the value
+            return
+                (AthleteResponse)
+                    RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
+                    {
+                        var athleteResults = NasgaClient.AgilityScreenScrape(request);
+                        //var athleteResults = NasgaClient.MockScreenScrape(request);
+                        return athleteResults;
+                    });
         }
     }
 

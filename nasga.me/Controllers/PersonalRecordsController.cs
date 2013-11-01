@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using nasga.me.App_Start;
 using nasga.me.Interfaces;
 using nasga.me.Models;
+using ServiceStack.Common.Web;
 using ServiceStack.ServiceClient.Web;
+using ServiceStack.WebHost.Endpoints;
 
 namespace nasga.me.Controllers
 {
@@ -29,14 +32,20 @@ namespace nasga.me.Controllers
                 TempData["ProfileError"] = "Please complete your profile to continue.";
                 return RedirectToAction("Index", "Profile");
             }
-
-
-            //TODO else, contact the athlete record service and pull a record, and return it to the view
+            //TODO need to show loading mask here because service call can be long running
             //TODO store everything in inches maybe? http://www.dotnetperls.com/feet-inches
-            var client = new JsonServiceClient("http://localhost:62886/athlete/");
-            string responseJson = client.Get<string>(profile.FirstName + "/" + profile.LastName + "/" + profile.AthleteClass);
-            //https://github.com/ServiceStack/ServiceStack/wiki/C%23-client
-            return View(profile);
+            var athlete = new Athlete
+            {
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                Class = profile.AthleteClass
+            };
+
+            using (var svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            {
+                AthleteResponse athleteResponse = (AthleteResponse)svc.Any(athlete);
+                return View(athleteResponse);
+            }
         }
     }
 }
