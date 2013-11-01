@@ -33,8 +33,6 @@ namespace nasga.me.Controllers
                 TempData["ProfileError"] = "Please complete your profile to continue.";
                 return RedirectToAction("Index", "Profile");
             }
-
-            //TODO store everything in inches maybe? http://www.dotnetperls.com/feet-inches
             var athlete = new Athlete
             {
                 FirstName = profile.FirstName,
