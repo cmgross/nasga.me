@@ -33,6 +33,8 @@ namespace nasga.me
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            BundleTable.EnableOptimizations = false; //set to true on deployment
         }
     }
 }

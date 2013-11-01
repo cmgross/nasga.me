@@ -1,17 +1,11 @@
-using System;
-using System.Linq;
-using System.Configuration;
 using System.Collections.Generic;
-using ServiceStack.Configuration;
-using ServiceStack.OrmLite;
+using System.Linq;
 using ServiceStack.Common;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceInterface.Auth;
 using ServiceStack.ServiceInterface.ServiceModel;
-using ServiceStack.WebHost.Endpoints;
 
-namespace nasga.me
+namespace nasga.me.App_Start
 {
 	//Request DTO
 	public class Hello

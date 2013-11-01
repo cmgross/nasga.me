@@ -1,7 +1,44 @@
-﻿
-@{
-    ViewBag.Title = "Index";
-}
+﻿@model nasga.me.App_Start.AthleteResponse
+<h1>My Personal Records</h1>
 
-<h2>Index</h2>
-
+<h3>
+    @Model.FirstName @Model.LastName
+</h3>
+<h4>
+    @Model.Class
+</h4>
+<div>
+    <div style="display: inline-block; text-align: center">
+        Year<br/>
+        Rank<br/>
+        Braemar Stone<br/>
+        Open Stone<br />
+        Heavy For Distance<br />
+        Light For Distance<br />
+        Heavy Hammer<br />
+        Light Hammer<br />
+        Caber<br />
+        Sheaf<br />
+        Weight For Height<br />
+    </div>
+    @*<div style="display: inline-block; text-align: center">
+        All Time PR<br />
+        1/250<br/>
+    </div>*@
+    @foreach (var record in Model.Records.OrderByDescending(c => c.Year))
+        {
+        <div style="display: inline-block; text-align: center">
+            @record.Year <br/>
+            @record.Rank <br/>
+            @record.BraemarThrow<br/>
+            @record.OpenThrow<br/>
+            @record.HeavyThrow<br/>
+            @record.LightThrow<br />
+            @record.HeavyHammerThrow<br/>
+            @record.LightHammerThrow<br/>
+            @record.CaberPoints<br/>
+            @record.SheafThrow<br/>
+            @record.WfhThrow<br/>
+        </div>
+        }
+</div>

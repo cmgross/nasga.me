@@ -14,21 +14,27 @@ namespace nasga.me.App_Start
 {
     public class AthleteService : Service
     {
-        public AthleteResponse Any(Athlete request)
+        public object Any(Athlete request) //this returns cached json/raw bytes
         {
             //TODO: switch based on webconfig entry
             string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
-            //http://stackoverflow.com/questions/15564153/servicestack-caching-a-service-response-using-redis
-            //this.CacheClient.Set<PlayerPitchesResponse>("yourkey", value); //Set the value
-            //this.CacheClient.Get<PlayerPitchesResponse>("yourkey"); //Get the value
-            return
-                (AthleteResponse)
-                    RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
+            return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
                     {
                         var athleteResults = NasgaClient.AgilityScreenScrape(request);
                         //var athleteResults = NasgaClient.MockScreenScrape(request);
                         return athleteResults;
                     });
+        }
+
+        public AthleteResponse Get(Athlete request)
+        {
+            string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
+            AthleteResponse athleteResponse = base.Cache.Get<AthleteResponse>(cacheKey);
+            if (athleteResponse != null) return athleteResponse;
+            //athleteResponse = NasgaClient.AgilityScreenScrape(request);
+            athleteResponse = NasgaClient.MockScreenScrape(request);
+            base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(0, 5, 0));
+            return athleteResponse;
         }
     }
 
@@ -87,6 +93,7 @@ namespace nasga.me.App_Start
                 case "Pro":
                     athleteClass = request.Class;
                     break;
+                //TODO need to handle Master (no longer All+Masters) and Pro+Master
                 default:
                     athleteClass = "All+" + request.Class;
                     break;
@@ -176,9 +183,9 @@ namespace nasga.me.App_Start
         {
             AthleteResponse athleteResponse = new AthleteResponse
             {
-                FirstName = "Test",
-                LastName = "Athlete",
-                Class = "Test Class",
+                FirstName = "Charles",
+                LastName = "Gross",
+                Class = "Amateur",
                 Records = new List<AthleteResponse.Record>()
             };
 

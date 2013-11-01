@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using nasga.me.App_Start;
@@ -32,7 +33,7 @@ namespace nasga.me.Controllers
                 TempData["ProfileError"] = "Please complete your profile to continue.";
                 return RedirectToAction("Index", "Profile");
             }
-            //TODO need to show loading mask here because service call can be long running
+
             //TODO store everything in inches maybe? http://www.dotnetperls.com/feet-inches
             var athlete = new Athlete
             {
@@ -41,9 +42,9 @@ namespace nasga.me.Controllers
                 Class = profile.AthleteClass
             };
 
-            using (var svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            using (AthleteService svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
             {
-                AthleteResponse athleteResponse = (AthleteResponse)svc.Any(athlete);
+                AthleteResponse athleteResponse = svc.Get(athlete);
                 return View(athleteResponse);
             }
         }
