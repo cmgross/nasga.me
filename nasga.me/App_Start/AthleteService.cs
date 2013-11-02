@@ -39,6 +39,7 @@ namespace nasga.me.App_Start
         }
     }
 
+    //TODO Move these to Models
     //Request DTO
     public class Athlete
     {
@@ -142,7 +143,7 @@ namespace nasga.me.App_Start
                     break;
             }
 
-            AthleteResponse athleteResponse = new AthleteResponse
+            var athleteResponse = new AthleteResponse
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -151,7 +152,7 @@ namespace nasga.me.App_Start
             };
 
 
-            int maxYear = DateTime.Now.Year;
+            var maxYear = DateTime.Now.Year;
 
             #region WebClientToNasgaWeb
             using (WebClient client = new WebClient())
@@ -271,7 +272,7 @@ namespace nasga.me.App_Start
 
         public static AthleteResponse MockScreenScrape(Athlete request)
         {
-            AthleteResponse athleteResponse = new AthleteResponse
+            var athleteResponse = new AthleteResponse
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -280,7 +281,7 @@ namespace nasga.me.App_Start
             };
 
             //mock records are based off a single female athlete with two years of records
-            AthleteResponse.Record record1 = new AthleteResponse.Record
+            var record1 = new AthleteResponse.Record
             {
                 Year = "2012",
                 Rank = "2/250",
@@ -332,7 +333,7 @@ namespace nasga.me.App_Start
                 }
             };
 
-            AthleteResponse.Record record2 = new AthleteResponse.Record
+            var record2 = new AthleteResponse.Record
             {
                 Year = "2013",
                 Rank = "1/250",

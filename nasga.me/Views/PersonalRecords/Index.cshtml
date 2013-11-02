@@ -1,92 +1,90 @@
-﻿@model nasga.me.App_Start.AthleteResponse
+﻿@model nasga.me.Models.PersonalRecordsViewModel
 <h2>Personal Records</h2>
-<h3>
-    @Model.FirstName @Model.LastName
-</h3>
-<h4>
-    @Model.Class
-</h4>
-<br/><br />
-<div style="overflow-x: scroll;">
-    <div style="display: inline-block; text-align: left; font-weight: bold; margin-right: 20px;">
-        Year<br/>
-        Rank<br/>
-        Braemar<br/>
-        Open<br />
-        HWFD<br />
-        LWFD<br />
-        HH<br />
-        LH<br />
-        Caber<br />
-        Sheaf<br />
-        WFH<br />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">@Model.FirstName @Model.LastName - @Model.Class</h3>
     </div>
-    @foreach (var record in Model.Records.OrderByDescending(c => c.Year))
-        {
-        <div class="hurr">
-            @record.Year <br/>
-            @record.Rank <br/>
-            @record.Braemar.Throw<br/>
-            @record.Open.Throw<br/>
-            @record.Heavy.Throw<br/>
-            @record.Light.Throw<br />
-            @record.Heavy.Throw<br/>
-            @record.Light.Throw<br/>
-            @record.Caber.Throw<br/>
-            @record.Sheaf.Throw<br/>
-            @record.Wfh.Throw<br/>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover table-condensed">
+                <tr>
+                    <th>Year</th>
+                    @foreach (var year in Model.Years)
+                    {
+                        <th>@year</th>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">Rank</td>
+                    @foreach (var rank in Model.Ranks)
+                    {
+                        <td>@rank</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">Braemar</td>
+                    @foreach (var braemar in Model.BraemarEvents)
+                    {
+                        <td>@braemar.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">Open</td>
+                    @foreach (var open in Model.OpenEvents)
+                    {
+                        <td>@open.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">HWFD</td>
+                    @foreach (var heavy in Model.HeavyEvents)
+                    {
+                        <td>@heavy.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">LWFD</td>
+                    @foreach (var light in Model.LightEvents)
+                    {
+                        <td>@light.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">HH</td>
+                    @foreach (var heavyHammer in Model.HeavyHammerEvents)
+                    {
+                        <td>@heavyHammer.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">LH</td>
+                    @foreach (var lightHammer in Model.LightHammerEvents)
+                    {
+                        <td>@lightHammer.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">Caber</td>
+                    @foreach (var caber in Model.CaberEvents)
+                    {
+                        <td>@caber.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">Sheaf</td>
+                    @foreach (var sheaf in Model.SheafEvents)
+                    {
+                        <td>@sheaf.Throw</td>
+                    }
+                </tr>
+                <tr>
+                    <td class="throw-label">WFH</td>
+                    @foreach (var wfh in Model.WfhEvents)
+                    {
+                        <td>@wfh.Throw</td>
+                    }
+                </tr>
+            </table>
         </div>
-        }
-    <div class="hurr">
-        Year<br />
-        Rank<br />
-        Braemar<br />
-        Open<br />
-        HWFD<br />
-        LWFD<br />
-        HH<br />
-        LH<br />
-        Caber<br />
-        Sheaf<br />
-        WFH<br />
-    </div>
-    <div class="hurr">
-        Year<br />
-        Rank<br />
-        Braemar<br />
-        Open<br />
-        HWFD<br />
-        LWFD<br />
-        HH<br />
-        LH<br />
-        Caber<br />
-        Sheaf<br />
-        WFH<br />
-    </div>
-    <div class="hurr">
-        Year<br />
-        Rank<br />
-        Braemar<br />
-        Open<br />
-        HWFD<br />
-        LWFD<br />
-        HH<br />
-        LH<br />
-        Caber<br />
-        Sheaf<br />
-        WFH<br />
-    </div>
-    <div class="hurr">
-        Year<br />
-        Rank<br />
-        Braemar<br />
-        Open<br />
-        HWFD<br />
-        LWFD<br />
-        HH<br />
-        LH<br />
-        Caber<br />
-        Sheaf<br />
-        WFH<br />
     </div>
 </div>

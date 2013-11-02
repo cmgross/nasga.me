@@ -39,11 +39,13 @@ namespace nasga.me.Controllers
                 LastName = profile.LastName,
                 Class = profile.AthleteClass
             };
-
-            using (AthleteService svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            //TODO handle master+pro by having the personal records view model actually have two athletes or another view just for the combo
+            //TODO provide injected AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current)
+            using (var svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
             {
                 AthleteResponse athleteResponse = svc.Get(athlete);
-                return View(athleteResponse);
+                var personalRecordsViewModel = new PersonalRecordsViewModel(athleteResponse);
+                return View(personalRecordsViewModel);
             }
         }
     }
