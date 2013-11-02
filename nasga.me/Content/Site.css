@@ -43,3 +43,14 @@ input[type="checkbox"].input-validation-error {
 .throw-label {
     font-weight: bold;
 }
+.table-responsive>.fixed-column {
+    position: fixed;
+    display: inline-block;
+    width: auto;
+    border-right: 1px solid #ddd;
+}
+@media(min-width:768px) {
+    .table-responsive>.fixed-column {
+        display: none;
+    }
+}
