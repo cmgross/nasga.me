@@ -1,0 +1,116 @@
+﻿@model nasga.me.Models.PersonalRecordsViewModel
+<h2>Personal Records</h2>
+<div class="resultscontainer">
+    <div class="resultsTitles">
+        <table class="table table-striped table-bordered table-condensed" style="border-right:0;">
+            <tr>
+                <th>Year</th>
+            </tr>
+            <tr>
+                <td class="throw-label">Rank</td>
+            </tr>
+            <tr>
+                <td class="throw-label">Braemar</td>
+            </tr>
+            <tr>
+                <td class="throw-label">Open</td>
+
+            </tr>
+            <tr>
+                <td class="throw-label">HWFD</td>
+            </tr>
+            <tr>
+                <td class="throw-label">LWFD</td>
+            </tr>
+            <tr>
+                <td class="throw-label">HH</td>
+            </tr>
+            <tr>
+                <td class="throw-label">LH</td>
+            </tr>
+            <tr>
+                <td class="throw-label">Caber</td>
+
+            </tr>
+            <tr>
+                <td class="throw-label">Sheaf</td>
+
+            </tr>
+            <tr>
+                <td class="throw-label">WFH</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div class="table-responsive allResults">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <tr>
+                @foreach (var year in Model.Years)
+                    {
+                    <th>@year</th>
+                    }
+            </tr>
+            <tr>
+                @foreach (var rank in Model.Ranks)
+                    {
+                    <td>@rank</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var braemar in Model.BraemarEvents)
+                    {
+                    <td>@braemar.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var open in Model.OpenEvents)
+                    {
+                    <td>@open.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var heavy in Model.HeavyEvents)
+                    {
+                    <td>@heavy.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var light in Model.LightEvents)
+                    {
+                    <td>@light.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var heavyHammer in Model.HeavyHammerEvents)
+                    {
+                    <td>@heavyHammer.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var lightHammer in Model.LightHammerEvents)
+                    {
+                    <td>@lightHammer.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var caber in Model.CaberEvents)
+                    {
+                    <td>@caber.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var sheaf in Model.SheafEvents)
+                    {
+                    <td>@sheaf.Throw</td>
+                    }
+            </tr>
+            <tr>
+                @foreach (var wfh in Model.WfhEvents)
+                    {
+                    <td>@wfh.Throw</td>
+                    }
+            </tr>
+        </table>
+    </div>
+</div>
