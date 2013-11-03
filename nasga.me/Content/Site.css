@@ -44,8 +44,8 @@ input[type="checkbox"].input-validation-error {
 .throw-label {
     font-weight: bold;
 }
-/*.table-responsive>.fixed-column {
-    position: fixed;
+.table-responsive>.fixed-column {
+    position: absolute;
     display: inline-block;
     width: auto;
     border-right: 1px solid #ddd;
@@ -54,18 +54,18 @@ input[type="checkbox"].input-validation-error {
     .table-responsive>.fixed-column {
         display: none;
     }
-}*/
-.resultscontainer {
+}
+/*.resultscontainer {
     width: 668px;
-    /*height: 70px;*/
+    height: 70px;
     display: table;
-    /*margin: 0 auto;*/
+    margin: 0 auto;
     overflow: scroll;
 }
 
 .resultsTitles {
-    /*width: 100px;*/
-    /*margin-left: 20px;*/
+    width: 100px;
+    margin-left: 20px;
     display: inline-block;
     float: left;
 }
@@ -75,4 +75,4 @@ input[type="checkbox"].input-validation-error {
     width: 320px;
     float: left;
     display: inline-block;
-}
+}*/

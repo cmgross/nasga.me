@@ -45,7 +45,8 @@ namespace nasga.me.Controllers
             {
                 AthleteResponse athleteResponse = svc.Get(athlete);
                 var personalRecordsViewModel = new PersonalRecordsViewModel(athleteResponse);
-                return View("Index2",personalRecordsViewModel);
+                //return View("Index2",personalRecordsViewModel)
+                    return View(personalRecordsViewModel);
             }
         }
     }
