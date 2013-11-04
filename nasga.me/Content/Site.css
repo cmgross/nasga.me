@@ -55,24 +55,3 @@ input[type="checkbox"].input-validation-error {
         display: none;
     }
 }
-/*.resultscontainer {
-    width: 668px;
-    height: 70px;
-    display: table;
-    margin: 0 auto;
-    overflow: scroll;
-}
-
-.resultsTitles {
-    width: 100px;
-    margin-left: 20px;
-    display: inline-block;
-    float: left;
-}
-
-.allResults {
-    margin-left: 0px;
-    width: 320px;
-    float: left;
-    display: inline-block;
-}*/

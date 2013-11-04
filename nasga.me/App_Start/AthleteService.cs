@@ -5,12 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using HtmlAgilityPack;
-using nasga.me.Interfaces;
+using nasga.me.Models;
 using ServiceStack.Common;
-using ServiceStack.Common.Extensions;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceInterface.ServiceModel;
 
 namespace nasga.me.App_Start
 {
@@ -18,7 +16,7 @@ namespace nasga.me.App_Start
     {
         public object Any(Athlete request) //this returns cached json/raw bytes
         {
-            //TODO: switch based on webconfig entry
+            //TODO: switch between screen scrape methods and create timespan both based on webconfig
             string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
             return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
                     {
@@ -39,88 +37,6 @@ namespace nasga.me.App_Start
             return athleteResponse;
         }
     }
-
-    //TODO Move these to Models
-    //Request DTO
-    public class Athlete
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Class { get; set; }
-    }
-
-    //Response DTO
-    public class AthleteResponse
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Class { get; set; }
-        public List<Record> Records { get; set; }
-        public ResponseStatus ResponseStatus { get; set; } //Where Exceptions get auto-serialized
-
-        public class Record
-        {
-            public string Year { get; set; }
-            public string Rank { get; set; }
-            public int TotalPoints { get; set; }
-            public BraemarEvent Braemar { get; set; }
-            public OpenEvent Open { get; set; }
-            public HeavyEvent Heavy { get; set; }
-            public LightEvent Light { get; set; }
-            public HeavyHammerEvent HeavyHammer { get; set; }
-            public LightHammerEvent LightHammer { get; set; }
-            public CaberEvent Caber { get; set; }
-            public SheafEvent Sheaf { get; set; }
-            public WfhEvent Wfh { get; set; }
-
-            public class BraemarEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class OpenEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class HeavyEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class LightEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class HeavyHammerEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class LightHammerEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class CaberEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class SheafEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-            public class WfhEvent : IThrowEvent
-            {
-                public string Throw { get; set; }
-                public int Points { get; set; }
-            }
-        }
-    }
-
 
     public static class NasgaClient
     {
@@ -158,7 +74,7 @@ namespace nasga.me.App_Start
             #region WebClientToNasgaWeb
             using (var client = new WebClient())
             {
-                for (int i = 2009; i <= maxYear; i++) //for some reason, records older than 2009 crash the scrape?
+                for (int i = 2009; i <= maxYear; i++) //for some reason, records older than 2009 crash the site even on the site?
                 {
                     var formValues = new NameValueCollection
                         {

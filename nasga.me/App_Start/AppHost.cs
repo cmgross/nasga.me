@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using nasga.me.Interfaces;
+using nasga.me.Models;
 using nasga.me.Services;
 using ServiceStack.Configuration;
 using ServiceStack.CacheAccess;
