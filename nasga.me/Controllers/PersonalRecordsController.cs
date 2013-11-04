@@ -9,6 +9,7 @@ using nasga.me.Interfaces;
 using nasga.me.Models;
 using ServiceStack.Common.Web;
 using ServiceStack.ServiceClient.Web;
+using ServiceStack.ServiceInterface;
 using ServiceStack.WebHost.Endpoints;
 
 namespace nasga.me.Controllers
@@ -33,19 +34,23 @@ namespace nasga.me.Controllers
                 TempData["ProfileError"] = "Please complete your profile to continue.";
                 return RedirectToAction("Index", "Profile");
             }
-            var athlete = new Athlete
-            {
-                FirstName = profile.FirstName,
-                LastName = profile.LastName,
-                Class = profile.AthleteClass
-            };
-            //TODO handle master+pro by having the personal records view model actually have two athletes or another view just for the combo
             //TODO provide injected AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current)
-            using (var svc = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            using (AthleteService service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
             {
-                AthleteResponse athleteResponse = svc.Get(athlete);
+                if (profile.AthleteClass == _configManager.AthleteComboClass)
+                {
+                    var athletes = profile.AthleteClass.Split('+').Select(athleteClass => new Athlete
+                    {
+                        FirstName = profile.FirstName, LastName = profile.LastName, Class = athleteClass
+                    }).ToList();
+
+                    var athleteResponses = service.Get(athletes);
+                    var personalRecordsViewModels = athleteResponses.Select(response => new PersonalRecordsViewModel(response)).ToList();
+                    return View("Combo", personalRecordsViewModels);
+                }
+                var athleteResponse = service.Get(new Athlete{FirstName = profile.FirstName, LastName = profile.LastName, Class = profile.AthleteClass});
                 var personalRecordsViewModel = new PersonalRecordsViewModel(athleteResponse);
-                    return View(personalRecordsViewModel);
+                return View(personalRecordsViewModel);
             }
         }
     }

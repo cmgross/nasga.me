@@ -14,5 +14,6 @@ namespace nasga.me.Interfaces
         string AthleteClassKey { get; set; }
         List<string> AthleteClasses { get; set; }
         int ConfigurationExpirationDays { get; set; }
+        string AthleteComboClass { get; set; }
     }
 }

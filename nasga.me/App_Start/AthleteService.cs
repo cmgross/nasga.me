@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using HtmlAgilityPack;
+using Microsoft.Ajax.Utilities;
 using nasga.me.Models;
 using ServiceStack.Common;
 using ServiceStack.ServiceHost;
@@ -21,7 +22,7 @@ namespace nasga.me.App_Start
             return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
                     {
                         //var athleteResults = NasgaClient.AgilityScreenScrape(request);
-                        var athleteResults = NasgaClient.MockScreenScrape(request);
+                        var athleteResults = MockScreenScrape(request);
                         return athleteResults;
                     });
         }
@@ -31,22 +32,24 @@ namespace nasga.me.App_Start
             var cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
             var athleteResponse = base.Cache.Get<AthleteResponse>(cacheKey);
             if (athleteResponse != null) return athleteResponse;
-            athleteResponse = NasgaClient.AgilityScreenScrape(request);
-            //athleteResponse = NasgaClient.MockScreenScrape(request);
+            athleteResponse = AgilityScreenScrape(request);
+            //athleteResponse = MockScreenScrape(request);
             base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(0, 5, 0));
             return athleteResponse;
         }
-    }
 
-    public static class NasgaClient
-    {
-        public static AthleteResponse AgilityScreenScrape(Athlete request)
+        public List<AthleteResponse> Get(List<Athlete> request)
+        {
+            return request.Select(Get).ToList();
+        }
+
+        private AthleteResponse AgilityScreenScrape(Athlete request)
         {
             //"class=Pro&rankyear=2013&x=26&y=10"
             //classes: Pro, All+Women, All+Amateurs, All+Masters, All+Lightweight
             string athleteClass;
 
-            switch (request.Class) //TODO need to handle Master (no longer All+Masters) and Pro+Master
+            switch (request.Class)
             {
                 case "Master":
                 case "Pro":
@@ -76,50 +79,67 @@ namespace nasga.me.App_Start
             {
                 for (int i = 2009; i <= maxYear; i++) //for some reason, records older than 2009 crash the site even on the site?
                 {
-                    var formValues = new NameValueCollection
-                        {
-                            {"class", athleteClass},
-                            {"rankyear", i.ToString()},
-                            {"x", "26"},
-                            {"y", "10"}
-                        };
-                    byte[] byteArray = client.UploadValues("http://nasgaweb.com/dbase/rank_overall.asp", formValues);
-                    var document = new HtmlDocument();
-                    document.LoadHtml(Encoding.ASCII.GetString(byteArray));
-                    HtmlNode body = document.DocumentNode.Descendants().FirstOrDefault(n => n.Name == "body");
-                    if (body == null) continue;
+                    var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass, i.ToString());
+                    List<HtmlNode> athleteRows = new List<HtmlNode>();
+                    var athleteRowsInCache = base.Cache.Get<List<HtmlNode>>(cacheKey);
+                    if (athleteRowsInCache == null)
+                    {
+                        athleteRows = GetTable(client, athleteClass, i);
+                        if (athleteRows.Any()) 
+                            base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(24, 0, 0));
+                    }
 
-                    //this is the only identifier for the athlete table: <table cellspacing="2" cellpadding="1">
-                    HtmlNode athleteTable =
-                        body.Descendants("table")
-                            .FirstOrDefault(
-                                t => t.Attributes.Contains("cellpadding") && t.Attributes["cellpadding"].Value == "1");
-                    if (athleteTable == null) continue;
-
-                    //skip first two rows of this table, after that, each row is an athlete, first two rows have bgcolor: #99ccff
-                    List<HtmlNode> athleteRows =
-                        athleteTable.Descendants("tr")
-                                    .Where(
-                                        r =>
-                                        r.Attributes.Contains("bgcolor") && r.Attributes["bgcolor"].Value != "#99ccff")
-                                    .ToList();
                     if (!athleteRows.Any()) continue;
-
                     string nasgaName = request.FirstName + "&nbsp;" + request.LastName;
                     HtmlNode athleteRow = athleteRows.FirstOrDefault(a => a.InnerText.Contains(nasgaName));
                     if (athleteRow == null) continue;
                     string[] athleteData = athleteRow.Descendants("td").Select(d => d.InnerText).ToArray();
-                    var record = ParseAthleteData(athleteData,i,athleteRows.Count);
+                    var record = ParseAthleteData(athleteData, i, athleteRows.Count);
                     athleteResponse.Records.Add(record);
                 }
             }
             #endregion
+
+            if (!athleteResponse.Records.Any()) return athleteResponse;
             AthleteResponse.Record prRecords = GetPRs(athleteResponse.Records);
             athleteResponse.Records.Add(prRecords);
             return athleteResponse;
         }
 
-        public static AthleteResponse MockScreenScrape(Athlete request)
+        private static List<HtmlNode> GetTable(WebClient client, string athleteClass, int year)
+        {
+            var athleteRows = new List<HtmlNode>();
+            var formValues = new NameValueCollection
+                        {
+                            {"class", athleteClass},
+                            {"rankyear", year.ToString()},
+                            {"x", "26"},
+                            {"y", "10"}
+                        };
+            byte[] byteArray = client.UploadValues("http://nasgaweb.com/dbase/rank_overall.asp", formValues);
+            var document = new HtmlDocument();
+            document.LoadHtml(Encoding.ASCII.GetString(byteArray));
+            HtmlNode body = document.DocumentNode.Descendants().FirstOrDefault(n => n.Name == "body");
+            if (body == null) return athleteRows;
+
+            //this is the only identifier for the athlete table: <table cellspacing="2" cellpadding="1">
+            HtmlNode athleteTable =
+                body.Descendants("table")
+                    .FirstOrDefault(
+                        t => t.Attributes.Contains("cellpadding") && t.Attributes["cellpadding"].Value == "1");
+            if (athleteTable == null) return athleteRows;
+
+            //skip first two rows of this table, after that, each row is an athlete, first two rows have bgcolor: #99ccff
+            athleteRows =
+                athleteTable.Descendants("tr")
+                            .Where(
+                                r =>
+                                r.Attributes.Contains("bgcolor") && r.Attributes["bgcolor"].Value != "#99ccff")
+                            .ToList();
+            return athleteRows;
+        }
+
+        private static AthleteResponse MockScreenScrape(Athlete request)
         {
             var athleteResponse = new AthleteResponse
             {
@@ -241,7 +261,7 @@ namespace nasga.me.App_Start
             return athleteResponse;
         }
 
-        public static string ThrowConverter(string nasgaThrow)
+        private static string ThrowConverter(string nasgaThrow)
         {
             //17'-3.00" - what shows on site
             //"17'-3.00&quot;" - actual value from screen scrape

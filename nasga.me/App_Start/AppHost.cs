@@ -69,6 +69,7 @@ namespace nasga.me.App_Start
             string athleteClassKey = appSettings.GetString("AthleteClassKey");
             int expirationDays = Convert.ToInt16(appSettings.GetString("ConfigurationExpirationDays"));
             List<string> athleteClasses = appSettings.GetList("AthleteClasses").ToList();
+            string athleteComboClass = appSettings.GetString("AthleteComboClass");
             var appConfigManager = new AppConfigManager
             {
                 AthleteKey = athleteKey,
@@ -76,7 +77,8 @@ namespace nasga.me.App_Start
                 AthleteLastNameKey = athleteLastNameKey,
                 AthleteClassKey = athleteClassKey,
                 AthleteClasses = athleteClasses,
-                ConfigurationExpirationDays = expirationDays
+                ConfigurationExpirationDays = expirationDays,
+                AthleteComboClass = athleteComboClass
             };
 
             //Register all your dependencies
@@ -84,6 +86,7 @@ namespace nasga.me.App_Start
             container.Register<IHttpContextBaseWrapper>(c => new HttpContextBaseWrapper());
             container.Register<IProfileManager>(c => new CookieProfileManager(new HttpContextBaseWrapper(), appConfigManager));
             container.Register<IConfigManager>(c => appConfigManager);
+            //container.Register<AthleteService>(c => ResolveService<AthleteService>(HttpContext.Current));
             //Set MVC to use the same Funq IOC as ServiceStack
             ControllerBuilder.Current.SetControllerFactory(new FunqControllerFactory(container));
         }

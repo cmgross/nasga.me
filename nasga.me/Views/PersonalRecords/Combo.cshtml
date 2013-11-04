@@ -1,0 +1,93 @@
+﻿@model List<nasga.me.Models.PersonalRecordsViewModel>
+<h2>Personal Records</h2>
+@foreach (var athlete in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">@athlete.FirstName @athlete.LastName - @athlete.Class</h3>
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <tr>
+                        <th>Year</th>
+                        @foreach (var year in athlete.Years)
+                        {
+                            <th>@year</th>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">Rank</td>
+                        @foreach (var rank in athlete.Ranks)
+                        {
+                            <td>@rank</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">Braemar</td>
+                        @foreach (var braemar in athlete.BraemarEvents)
+                        {
+                            <td>@braemar.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">Open</td>
+                        @foreach (var open in athlete.OpenEvents)
+                        {
+                            <td>@open.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">HWFD</td>
+                        @foreach (var heavy in athlete.HeavyEvents)
+                        {
+                            <td>@heavy.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">LWFD</td>
+                        @foreach (var light in athlete.LightEvents)
+                        {
+                            <td>@light.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">HH</td>
+                        @foreach (var heavyHammer in athlete.HeavyHammerEvents)
+                        {
+                            <td>@heavyHammer.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">LH</td>
+                        @foreach (var lightHammer in athlete.LightHammerEvents)
+                        {
+                            <td>@lightHammer.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">Caber</td>
+                        @foreach (var caber in athlete.CaberEvents)
+                        {
+                            <td>@caber.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">Sheaf</td>
+                        @foreach (var sheaf in athlete.SheafEvents)
+                        {
+                            <td>@sheaf.Throw</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="throw-label">WFH</td>
+                        @foreach (var wfh in athlete.WfhEvents)
+                        {
+                            <td>@wfh.Throw</td>
+                        }
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+}

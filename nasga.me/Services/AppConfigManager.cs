@@ -14,5 +14,6 @@ namespace nasga.me.Services
         public string AthleteClassKey { get; set; }
         public List<string> AthleteClasses { get; set; }
         public int ConfigurationExpirationDays { get; set; }
+        public string AthleteComboClass { get; set; }
     }
 }
