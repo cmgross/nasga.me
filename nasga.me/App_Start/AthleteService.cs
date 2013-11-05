@@ -79,22 +79,13 @@ namespace nasga.me.App_Start
             {
                 for (int i = 2009; i <= maxYear; i++) //for some reason, records older than 2009 crash the site even on the site?
                 {
-                    var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass, i.ToString());
-                    List<HtmlNode> athleteRows = new List<HtmlNode>();
-                    var athleteRowsInCache = base.Cache.Get<List<HtmlNode>>(cacheKey);
-                    if (athleteRowsInCache == null)
-                    {
-                        athleteRows = GetTable(client, athleteClass, i);
-                        if (athleteRows.Any()) 
-                            base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(24, 0, 0));
-                    }
-
+                    var athleteRows = GetAthleteRows(client, athleteClass, i);
                     if (!athleteRows.Any()) continue;
                     string nasgaName = request.FirstName + "&nbsp;" + request.LastName;
                     HtmlNode athleteRow = athleteRows.FirstOrDefault(a => a.InnerText.Contains(nasgaName));
                     if (athleteRow == null) continue;
                     string[] athleteData = athleteRow.Descendants("td").Select(d => d.InnerText).ToArray();
-                    var record = ParseAthleteData(athleteData, i, athleteRows.Count);
+                    var record = ParseAthleteData(athleteData, i, athleteRows.Count, athleteClass);
                     athleteResponse.Records.Add(record);
                 }
             }
@@ -106,8 +97,11 @@ namespace nasga.me.App_Start
             return athleteResponse;
         }
 
-        private static List<HtmlNode> GetTable(WebClient client, string athleteClass, int year)
+        private List<HtmlNode> GetAthleteRows(WebClient client, string athleteClass, int year)
         {
+            var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass + year);
+            var athleteRowsInCache = base.Cache.Get<List<HtmlNode>>(cacheKey);
+            if (athleteRowsInCache != null) return athleteRowsInCache;
             var athleteRows = new List<HtmlNode>();
             var formValues = new NameValueCollection
                         {
@@ -136,6 +130,7 @@ namespace nasga.me.App_Start
                                 r =>
                                 r.Attributes.Contains("bgcolor") && r.Attributes["bgcolor"].Value != "#99ccff")
                             .ToList();
+            base.Cache.Set<List<HtmlNode>>(cacheKey, athleteRows, new TimeSpan(0, 10, 0));
             return athleteRows;
         }
 
@@ -296,8 +291,9 @@ namespace nasga.me.App_Start
             return bestThrowsRecord;
         }
 
-        private static AthleteResponse.Record ParseAthleteData(string[] athleteData, int year, int totalAthletesInClass)
+        private static AthleteResponse.Record ParseAthleteData(string[] athleteData, int year, int totalAthletesInClass, string athleteClass)
         {
+            //there is an age column in masters table that shifts all data one column
             int totalPoints;
             int braemarPoints;
             int openPoints;
@@ -308,16 +304,16 @@ namespace nasga.me.App_Start
             int caberPoints;
             int sheafPoints;
             int wfhPoints;
-            int.TryParse(athleteData[2], out totalPoints);
-            int.TryParse(athleteData[4], out braemarPoints);
-            int.TryParse(athleteData[6], out openPoints);
-            int.TryParse(athleteData[8], out heavyPoints);
-            int.TryParse(athleteData[10], out lightPoints);
-            int.TryParse(athleteData[12], out heavyHammerPoints);
-            int.TryParse(athleteData[14], out lightHammerPoints);
-            int.TryParse(athleteData[15], out caberPoints);
-            int.TryParse(athleteData[17], out sheafPoints);
-            int.TryParse(athleteData[19], out wfhPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 3 : 2], out totalPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 5 : 4], out braemarPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 7 : 6], out openPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 9 : 8], out heavyPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 11 : 10], out lightPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 13 : 12], out heavyHammerPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 15 : 14], out lightHammerPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 16 : 15], out caberPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 18 : 17], out sheafPoints);
+            int.TryParse(athleteData[athleteClass == "Master" ? 20 : 19], out wfhPoints);
 
             #region recordCreation
             var record = new AthleteResponse.Record
@@ -327,32 +323,32 @@ namespace nasga.me.App_Start
                 TotalPoints = totalPoints,
                 Braemar = new AthleteResponse.Record.BraemarEvent
                 {
-                    Throw = ThrowConverter(athleteData[3]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 4 : 3]),
                     Points = braemarPoints
                 },
                 Open = new AthleteResponse.Record.OpenEvent
                 {
-                    Throw = ThrowConverter(athleteData[5]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 6 : 5]),
                     Points = openPoints
                 },
                 Heavy = new AthleteResponse.Record.HeavyEvent
                 {
-                    Throw = ThrowConverter(athleteData[7]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 8 : 7]),
                     Points = heavyPoints
                 },
                 Light = new AthleteResponse.Record.LightEvent
                 {
-                    Throw = ThrowConverter(athleteData[9]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 10 : 9]),
                     Points = lightPoints
                 },
                 HeavyHammer = new AthleteResponse.Record.HeavyHammerEvent
                 {
-                    Throw = ThrowConverter(athleteData[11]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 12 : 11]),
                     Points = heavyHammerPoints
                 },
                 LightHammer = new AthleteResponse.Record.LightHammerEvent
                 {
-                    Throw = ThrowConverter(athleteData[13]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 14 : 13]),
                     Points = lightHammerPoints
                 },
                 Caber = new AthleteResponse.Record.CaberEvent
@@ -362,12 +358,12 @@ namespace nasga.me.App_Start
                 },
                 Sheaf = new AthleteResponse.Record.SheafEvent
                 {
-                    Throw = ThrowConverter(athleteData[16]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 17 : 16]),
                     Points = sheafPoints
                 },
                 Wfh = new AthleteResponse.Record.WfhEvent
                 {
-                    Throw = ThrowConverter(athleteData[18]),
+                    Throw = ThrowConverter(athleteData[athleteClass == "Master" ? 19 : 18]),
                     Points = wfhPoints
                 }
             };
