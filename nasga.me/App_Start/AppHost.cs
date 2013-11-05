@@ -70,6 +70,11 @@ namespace nasga.me.App_Start
             int expirationDays = Convert.ToInt16(appSettings.GetString("ConfigurationExpirationDays"));
             List<string> athleteClasses = appSettings.GetList("AthleteClasses").ToList();
             string athleteComboClass = appSettings.GetString("AthleteComboClass");
+
+            List<string> years = new List<string>();
+            for (int i = 2009; i <= DateTime.Now.Year; i++)
+                years.Add(i.ToString());
+
             var appConfigManager = new AppConfigManager
             {
                 AthleteKey = athleteKey,
@@ -78,7 +83,8 @@ namespace nasga.me.App_Start
                 AthleteClassKey = athleteClassKey,
                 AthleteClasses = athleteClasses,
                 ConfigurationExpirationDays = expirationDays,
-                AthleteComboClass = athleteComboClass
+                AthleteComboClass = athleteComboClass,
+                Years = years.OrderByDescending(y => y).ToList()
             };
 
             //Register all your dependencies

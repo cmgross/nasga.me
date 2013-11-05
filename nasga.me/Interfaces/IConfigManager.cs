@@ -13,6 +13,7 @@ namespace nasga.me.Interfaces
         string AthleteLastNameKey { get; set; }
         string AthleteClassKey { get; set; }
         List<string> AthleteClasses { get; set; }
+        List<string> Years { get; set; }
         int ConfigurationExpirationDays { get; set; }
         string AthleteComboClass { get; set; }
     }

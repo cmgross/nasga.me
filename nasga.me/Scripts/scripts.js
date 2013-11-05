@@ -14,7 +14,7 @@
             }
         });
     });
-    $("#personalRecords").click(function() {
+    $("#personalRecords").click(function () {
         $.blockUI({
             message: "Loading Records",
             css: {
@@ -35,5 +35,42 @@
 
     $fixedColumn.find('tr').each(function (i, elem) {
         $(this).height($table.find('tr:eq(' + i + ')').height());
+    });
+
+
+
+    //var nameSearchCache = {};
+    //var nameSearchXhr;
+    //if (term in nameSearchCache) {
+    //    return nameSearchCache[term];
+    //}
+    //if (nameSearchXhr != null) {
+    //    nameSearchXhr.abort();
+    //}
+
+    var cache = {};
+   
+    $('#Name').typeahead({
+        minLength: 4,
+        source: function (term, process) {
+            var url = "/Search/GetNames";
+            var cacheHandle = $('#Name').val().toLowerCase();
+            if (typeof (cache[cacheHandle]) != "undefined") {
+                console.log(cache[cacheHandle]);
+                return process(cache[cacheHandle]);
+            } else {
+                $.ajax({
+                    dataType: "json",
+                    cache: true,
+                    url: url,
+                    data: { term: term },
+                    success: function (data) {
+                        cache[cacheHandle] = data;
+                        console.log(data);
+                        return process(data);
+                    }
+                });
+            }
+        }
     });
 });
