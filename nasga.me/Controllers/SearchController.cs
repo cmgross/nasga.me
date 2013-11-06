@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using nasga.me.App_Start;
 using nasga.me.Interfaces;
 using nasga.me.Models;
 using ServiceStack.Mvc;
+using ServiceStack.WebHost.Endpoints;
 
 namespace nasga.me.Controllers
 {
@@ -34,23 +36,24 @@ namespace nasga.me.Controllers
         }
 
 
-        [HttpGet] //var results = SearchDAL.SearchStarTrekCharacters(term); //query results here
-        public JsonResult GetNames(string term)
+        [HttpGet]
+        public JsonResult GetNames(string term, string year, string athleteClass)
         {
-            // A list of names to mimic results from a database
-            List<string> nameList = new List<string>
+            if (year == string.Empty || athleteClass == string.Empty) return new JsonResult
             {
-                "Jonathan", "Lisa", "Jordan", "Tyler", "Susan", "Brandon", "Clayton", "Elizabeth", "Jennifer"
-            };
-
-            var results = nameList.Where(n =>
-                n.StartsWith(term, StringComparison.OrdinalIgnoreCase));
-
-            return new JsonResult
-            {
-                Data = results.ToArray(),
+                Data = string.Empty.ToArray(),
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
+
+            using (var service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            {
+                var results = service.GetNames(term, year, athleteClass);
+                return new JsonResult
+                {
+                    Data = results.ToArray(),
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
+            }
         }
 
 

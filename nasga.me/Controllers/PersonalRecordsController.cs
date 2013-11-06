@@ -35,7 +35,7 @@ namespace nasga.me.Controllers
                 return RedirectToAction("Index", "Profile");
             }
             //TODO provide injected AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current)
-            using (AthleteService service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            using (var service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
             {
                 if (profile.AthleteClass == _configManager.AthleteComboClass)
                 {

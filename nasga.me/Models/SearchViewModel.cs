@@ -17,7 +17,8 @@ namespace nasga.me.Models
         {
             var classes = new List<string> { string.Empty };
             var years = new List<string> { string.Empty };
-            classes.AddRange(configManager.AthleteClasses);
+            //remove the combo class
+            classes.AddRange(configManager.AthleteClasses.Where(c => c != configManager.AthleteComboClass));
             years.AddRange(configManager.Years);
             Classes = classes.Select(p => new SelectListItem
             {

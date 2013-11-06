@@ -43,6 +43,16 @@ namespace nasga.me.App_Start
             return request.Select(Get).ToList();
         }
 
+        public List<string> GetNames(string term, string year, string athleteClass)
+        {
+            //extract class switch in AgilityScreenScrape to its own method
+            List<string> nameList = new List<string>
+            {
+                "Jonathan", "Lisa", "Jordan", "Tyler", "Susan", "Brandon", "Clayton", "Elizabeth", "Jennifer"
+            };
+            return nameList.Where(n =>n.StartsWith(term, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
         private AthleteResponse AgilityScreenScrape(Athlete request)
         {
             //"class=Pro&rankyear=2013&x=26&y=10"
