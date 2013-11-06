@@ -28,6 +28,22 @@
             }
         });
     });
+    $("#searchForm").submit(function () {
+        if (!$("#searchForm").valid()) return false;
+        $.blockUI({
+            message: "Searching",
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#000',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#fff'
+            }
+        });
+    });
+
     var $table = $('.table');
     var $fixedColumn = $table.clone().insertBefore($table).addClass('fixed-column');
 
@@ -55,10 +71,27 @@
                     cache: true,
                     url: url,
                     data: { term: term, year: year, athleteClass: athleteClass },
+                    beforeSend: function () {
+                        $.blockUI({
+                            message: "Loading",
+                            css: {
+                                border: 'none',
+                                padding: '15px',
+                                backgroundColor: '#000',
+                                '-webkit-border-radius': '10px',
+                                '-moz-border-radius': '10px',
+                                opacity: .5,
+                                color: '#fff'
+                            }
+                        });
+                    },
                     success: function (data) {
                         //cache[cacheHandle] = data;
                         //console.log(data);
                         return process(data);
+                    },
+                    complete: function () {
+                        $.unblockUI();
                     }
                 });
             //}

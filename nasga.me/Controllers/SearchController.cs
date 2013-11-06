@@ -9,6 +9,7 @@ using nasga.me.Interfaces;
 using nasga.me.Models;
 using ServiceStack.Mvc;
 using ServiceStack.WebHost.Endpoints;
+using WebGrease.Css.Ast.Animation;
 
 namespace nasga.me.Controllers
 {
@@ -32,9 +33,18 @@ namespace nasga.me.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(Search search)
         {
-            return View();
+            if (!ModelState.IsValid) return View("Error");
+            string[] name = search.Name.Split(' ');
+            if (name.Length < 1) return View("Error");
+            var firstName = name[0];
+            var lastName = name[1];
+            using (var service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
+            {
+                var athleteResponse = service.Get(new Athlete { FirstName = firstName, LastName = lastName, Class = search.AthleteClass });
+                var personalRecordsViewModel = new PersonalRecordsViewModel(athleteResponse);
+                return View("Results", personalRecordsViewModel);
+            }
         }
-
 
         [HttpGet]
         public JsonResult GetNames(string term, string year, string athleteClass)
@@ -47,7 +57,8 @@ namespace nasga.me.Controllers
 
             using (var service = AppHostBase.ResolveService<AthleteService>(System.Web.HttpContext.Current))
             {
-                var results = service.GetNames(term, year, athleteClass);
+                int athleteYear = int.Parse(year);
+                var results = service.GetNames(term, athleteYear, athleteClass);
                 return new JsonResult
                 {
                     Data = results.ToArray(),
@@ -55,7 +66,6 @@ namespace nasga.me.Controllers
                 };
             }
         }
-
 
         protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)
         {

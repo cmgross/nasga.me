@@ -221,7 +221,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\PersonalRecords\Index.cshtml" />
+    <Content Include="Views\Shared\Results.cshtml" />
     <Content Include="Views\PersonalRecords\Combo.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
   </ItemGroup>

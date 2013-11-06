@@ -50,7 +50,7 @@ namespace nasga.me.Controllers
                 }
                 var athleteResponse = service.Get(new Athlete{FirstName = profile.FirstName, LastName = profile.LastName, Class = profile.AthleteClass});
                 var personalRecordsViewModel = new PersonalRecordsViewModel(athleteResponse);
-                return View(personalRecordsViewModel);
+                return View("Results",personalRecordsViewModel);
             }
         }
     }

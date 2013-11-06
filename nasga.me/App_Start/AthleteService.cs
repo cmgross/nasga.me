@@ -15,64 +15,72 @@ namespace nasga.me.App_Start
 {
     public class AthleteService : Service
     {
-        public object Any(Athlete request) //this returns cached json/raw bytes
-        {
-            //TODO: switch between screen scrape methods and create timespan both based on webconfig
-            string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
-            return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
-                    {
-                        //var athleteResults = NasgaClient.AgilityScreenScrape(request);
-                        var athleteResults = MockScreenScrape(request);
-                        return athleteResults;
-                    });
-        }
-
+        #region PublicServiceCalls
+        //public object Any(Athlete request) //this returns cached json/raw bytes
+        //{
+        //    string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
+        //    return RequestContext.ToOptimizedResultUsingCache(base.Cache, cacheKey, new TimeSpan(1, 0, 0), () =>
+        //            {
+        //                //var athleteResults = NasgaClient.AgilityScreenScrape(request);
+        //                var athleteResults = MockScreenScrape(request);
+        //                return athleteResults;
+        //            });
+        //}
         public AthleteResponse Get(Athlete request)
         {
-            var cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
-            var athleteResponse = base.Cache.Get<AthleteResponse>(cacheKey);
+            string cacheKey = UrnId.Create<AthleteResponse>(request.LastName + request.FirstName + request.Class);
+            var athleteResponse = GetAthleteResponseFromCache(cacheKey);
             if (athleteResponse != null) return athleteResponse;
             athleteResponse = AgilityScreenScrape(request);
             //athleteResponse = MockScreenScrape(request);
-            base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(0, 5, 0));
+            SetAthleteResponseInCache(athleteResponse,cacheKey);
             return athleteResponse;
         }
-
         public List<AthleteResponse> Get(List<Athlete> request)
         {
             return request.Select(Get).ToList();
         }
-
-        public List<string> GetNames(string term, string year, string athleteClass)
+        public List<string> GetNames(string term, int year, string athleteClass)
         {
-            //extract class switch in AgilityScreenScrape to its own method
-            List<string> nameList = new List<string>
+            var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass + year);
+            athleteClass = CleanClass(athleteClass);
+            var athleteRows = GetAthleteRowsFromCache(cacheKey);
+            if (athleteRows == null)
             {
-                "Jonathan", "Lisa", "Jordan", "Tyler", "Susan", "Brandon", "Clayton", "Elizabeth", "Jennifer"
-            };
-            return nameList.Where(n =>n.StartsWith(term, StringComparison.OrdinalIgnoreCase)).ToList();
+                using (var client = new WebClient())
+                {
+                    athleteRows = GetAthleteRows(client, athleteClass, year);
+                    SetAthleteRowsInCache(athleteRows, cacheKey);
+                }
+            }
+            if (!athleteRows.Any()) return new List<string>();
+            List<string> names = athleteRows.Select(r => r.Descendants("td").Select(d => d.InnerText).ToArray()).Select(r => r[1].Replace("&nbsp;", " ")).ToList();
+            return names.Where(n => n.Contains(term)).ToList();
         }
+        #endregion
 
+        #region CachingMethods
+        private List<HtmlNode> GetAthleteRowsFromCache(string cacheKey)
+        {
+            return base.Cache.Get<List<HtmlNode>>(cacheKey);
+        }
+        private void SetAthleteRowsInCache(List<HtmlNode> athleteRows, string cacheKey)
+        {
+            base.Cache.Set<List<HtmlNode>>(cacheKey, athleteRows, new TimeSpan(24, 0, 0));//TODO: get timespan from config
+        }
+        private AthleteResponse GetAthleteResponseFromCache(string cacheKey)
+        {
+            return base.Cache.Get<AthleteResponse>(cacheKey);
+        }
+        private void SetAthleteResponseInCache(AthleteResponse athleteResponse, string cacheKey)
+        {
+            base.Cache.Set<AthleteResponse>(cacheKey, athleteResponse, new TimeSpan(24, 0, 0));//TODO: get timespan from config
+        }
+        #endregion
+
+        #region Scrapes
         private AthleteResponse AgilityScreenScrape(Athlete request)
         {
-            //"class=Pro&rankyear=2013&x=26&y=10"
-            //classes: Pro, All+Women, All+Amateurs, All+Masters, All+Lightweight
-            string athleteClass;
-
-            switch (request.Class)
-            {
-                case "Master":
-                case "Pro":
-                    athleteClass = request.Class;
-                    break;
-                case "Amateur":
-                    athleteClass = "All+" + request.Class + "s";
-                    break;
-                default:
-                    athleteClass = "All+" + request.Class;
-                    break;
-            }
-
             var athleteResponse = new AthleteResponse
             {
                 FirstName = request.FirstName,
@@ -81,7 +89,7 @@ namespace nasga.me.App_Start
                 Records = new List<AthleteResponse.Record>()
             };
 
-
+            string athleteClass = CleanClass(request.Class);
             var maxYear = DateTime.Now.Year;
 
             #region WebClientToNasgaWeb
@@ -89,8 +97,10 @@ namespace nasga.me.App_Start
             {
                 for (int i = 2009; i <= maxYear; i++) //for some reason, records older than 2009 crash the site even on the site?
                 {
-                    var athleteRows = GetAthleteRows(client, athleteClass, i);
+                    var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass + i);
+                    var athleteRows = GetAthleteRowsFromCache(cacheKey) ?? GetAthleteRows(client, athleteClass, i);
                     if (!athleteRows.Any()) continue;
+                    SetAthleteRowsInCache(athleteRows, cacheKey);
                     string nasgaName = request.FirstName + "&nbsp;" + request.LastName;
                     HtmlNode athleteRow = athleteRows.FirstOrDefault(a => a.InnerText.Contains(nasgaName));
                     if (athleteRow == null) continue;
@@ -106,12 +116,8 @@ namespace nasga.me.App_Start
             athleteResponse.Records.Add(prRecords);
             return athleteResponse;
         }
-
         private List<HtmlNode> GetAthleteRows(WebClient client, string athleteClass, int year)
         {
-            var cacheKey = UrnId.Create<List<HtmlNode>>(athleteClass + year);
-            var athleteRowsInCache = base.Cache.Get<List<HtmlNode>>(cacheKey);
-            if (athleteRowsInCache != null) return athleteRowsInCache;
             var athleteRows = new List<HtmlNode>();
             var formValues = new NameValueCollection
                         {
@@ -140,10 +146,8 @@ namespace nasga.me.App_Start
                                 r =>
                                 r.Attributes.Contains("bgcolor") && r.Attributes["bgcolor"].Value != "#99ccff")
                             .ToList();
-            base.Cache.Set<List<HtmlNode>>(cacheKey, athleteRows, new TimeSpan(0, 10, 0));
             return athleteRows;
         }
-
         private static AthleteResponse MockScreenScrape(Athlete request)
         {
             var athleteResponse = new AthleteResponse
@@ -265,14 +269,15 @@ namespace nasga.me.App_Start
             athleteResponse.Records.Add(prRecords);
             return athleteResponse;
         }
+        #endregion
 
+        #region Helpers
         private static string ThrowConverter(string nasgaThrow)
         {
             //17'-3.00" - what shows on site
             //"17'-3.00&quot;" - actual value from screen scrape
             return nasgaThrow.Replace("&quot;", "\"");
         }
-
         private static AthleteResponse.Record GetPRs(List<AthleteResponse.Record> records)
         {
             var bestBraemar = records.OrderByDescending(b => b.Braemar.Points).First().Braemar;
@@ -300,7 +305,6 @@ namespace nasga.me.App_Start
             };
             return bestThrowsRecord;
         }
-
         private static AthleteResponse.Record ParseAthleteData(string[] athleteData, int year, int totalAthletesInClass, string athleteClass)
         {
             //there is an age column in masters table that shifts all data one column
@@ -380,5 +384,27 @@ namespace nasga.me.App_Start
             #endregion
             return record;
         }
+        private static string CleanClass(string requestClass)
+        {
+            //"class=Pro&rankyear=2013&x=26&y=10"
+            //classes: Pro, All+Women, All+Amateurs, All+Masters, All+Lightweight
+            string athleteClass;
+
+            switch (requestClass)
+            {
+                case "Master":
+                case "Pro":
+                    athleteClass = requestClass;
+                    break;
+                case "Amateur":
+                    athleteClass = "All+" + requestClass + "s";
+                    break;
+                default:
+                    athleteClass = "All+" + requestClass;
+                    break;
+            }
+            return athleteClass;
+        }
+        #endregion
     }
 }
